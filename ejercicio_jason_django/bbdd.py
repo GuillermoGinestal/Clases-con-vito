@@ -1,5 +1,6 @@
 import requests as req
 import json
+import functools
 import os
 import utm
 
@@ -78,15 +79,15 @@ print('Número de códigos postales en la m-30: ',get_cp_m_30(data))
 
 def menu():
     print(' -------------------------------')
-    print("DEA\n")
+    print("MENÚ DEA\n")
     print("1. Crear usuario")
-    print("Salir")
+    print("2. Salir")
 menu()
 
-user = input("Elija una opción: ")
+user = input("\nElija una opción: ")
 
 while user.lower() != "salir":
-    # Opción que me crea un usuario con contraseña y si es necesairo nuwvo usuario
+    # Opción que me crea un usuario con contraseña y si es necesairo nuevo usuario
 
     if user == "1":                      
         name = input("Nombre: ")
@@ -94,7 +95,7 @@ while user.lower() != "salir":
         new_user = {"name": name, "password" : password}
         
         def get_users():
-            with open("users.json","w") as file:
+            with open("users.json") as file:
                 users = json.load(file)
                 return users
         users = get_users()
@@ -102,4 +103,4 @@ while user.lower() != "salir":
         with open ("users.json", "w") as file:
             json.dump(users, file)
         menu()
-        user = input(": ")
+        
