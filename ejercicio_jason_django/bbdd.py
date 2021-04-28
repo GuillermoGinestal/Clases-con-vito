@@ -1,7 +1,9 @@
 import requests as req
 import json
 import os
+import utm
 
+# utm.to_latlon(x,y,30,"N")
 
 def get_data_desfibriladores():
 
@@ -43,13 +45,13 @@ def get_titulo(datos, titulo):
 print('Públicas: ',get_titulo(data,'Pública'))
 print('Privadas: ',get_titulo(data,'Privada'))
 
-def get_data(datos, titulo):
+# def get_data(datos, titulo):
 
-    return len(list(filter(lambda dea: dea['tipo_titularidad'] == titulo ,datos)))
+#     return len(list(filter(lambda dea: dea['tipo_titularidad'] == titulo ,datos)))
 
-test_a = get_data(data, 'Pública')
+# test_a = get_data(data, 'Pública')
 
-print(test_a)
+# print(test_a)
     
 
 
@@ -66,10 +68,38 @@ def get_cp_m_30(datos):
 
 print('Número de códigos postales en la m-30: ',get_cp_m_30(data))
 
-def get_cp_30(datos):
+# def get_cp_30(datos):
 
-    cp_m30=("28029", "28036", "28046", "28039", "28016", "28020", "28002", "28003", "28015", "28010", "28006", "28028", 
-    "28008", "28004", "28001", "280013", "28014", "28009", "28007", "28012", "28005", "28045" )
+#     cp_m30=("28029", "28036", "28046", "28039", "28016", "28020", "28002", "28003", "28015", "28010", "28006", "28028", 
+#     "28008", "28004", "28001", "280013", "28014", "28009", "28007", "28012", "28005", "28045" )
 
-    resultado = len(list(filter(lambda dea: dea['direccion_codigo_postal'] in cp_m30, datos)))
-    return resultado
+#     resultado = len(list(filter(lambda dea: dea['direccion_codigo_postal'] in cp_m30, datos)))
+#     return resultado
+
+def menu():
+    print(' -------------------------------')
+    print("DEA\n")
+    print("1. Crear usuario")
+    print("Salir")
+menu()
+
+user = input("Elija una opción: ")
+
+while user.lower() != "salir":
+    # Opción que me crea un usuario con contraseña y si es necesairo nuwvo usuario
+
+    if user == "1":                      
+        name = input("Nombre: ")
+        password = input("Contraseña: ")
+        new_user = {"name": name, "password" : password}
+        
+        def get_users():
+            with open("users.json","w") as file:
+                users = json.load(file)
+                return users
+        users = get_users()
+        users['data'].append(new_user)
+        with open ("users.json", "w") as file:
+            json.dump(users, file)
+        menu()
+        user = input(": ")
