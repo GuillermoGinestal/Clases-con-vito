@@ -152,24 +152,42 @@ while user.lower() != "salir":
                     by_code(code)
                     sub_menu()
                     user = input("Elija opción: ")
-        
-    elif user == "3":
-        user_x = input("Introduzca una coordenada X: ")
-        user_y = input("Introduzca una coordenada Y: ")
-        user_latitud = utm.to_latitud(user_x,user_y,30,"N")
-        
-        user = User(user_x, user_y)
-        deas_lista = user.get_nearest_by_radio(data, 100)
-        print(f"Se han encontrado {len(deas_lista)} D.E.A.s:")
-        all_points = f"https://www.google.com/maps/dir/{user_latitud[0]},+{user_latitud[1]}/"
-        for dea in deas_list:
-            dea_latlong = utm.to_latlon(int(dea["direccion_coordenada_x"]), int(dea["direccion_coordenada_y"]), 30, "N")
-            all_points+=f"{dea_latlong[0]},{dea_latlong[1]}/"
-        print(all_points)
-        sub_menu()
-        user = input("Elija opción: ")
+                
+                #Opción que nos busca el DEA por latitud
+                elif user == "2":
+                    user_x = int(input("Introduzca coordenada X: "))
+                    user_y = int(input("Introduzca coordenada Y: "))
+                    user_latitud=utm.to_latlong(user_x,user_y,30,"N")
+                    
+                    user = User(user_x, user_y)
+                    dea, H = user.get_nearest_dea(data)
+                    latitud = utm.to_latlong(int(dea["direccion_coordenada_x"]), int(dea["direccion_coordenada_y"]), 30, "N")
+                    def get_meters(user_latitud, dea_latitud):
+                        return distance.distance(user_latitud, dea_latlong).m
+                    distance_meters = get_meters(userlatitud,latitud)
+                    print(dea)
+                    print(f"https://www.google.com/maps/search/?api=1&query={latitud[0]},{latitud[1]}")
+                    print(f"https://www.google.com/maps/dir/{userlatitud[0]},+{userlatitud[1]}/{latitud[0]},{latitud[1]}")
+                    print("Usted está a ",distance_meters," metros", "Hipotenusa: ", H)
+                    user = input("Elija opción: ")
+                
+                elif user == "3":
+                    user_x = input("Introduzca una coordenada X: ")
+                    user_y = input("Introduzca una coordenada Y: ")
+                    user_latitud = utm.to_latlong(user_x,user_y,30,"N")
+                    
+                    user = User(user_x, user_y)
+                    deas_lista = user.get_nearest_by_radio(data, 100)
+                    print(f"Se han encontrado {len(deas_lista)} D.E.A.s:")
+                    all_points = f"https://www.google.com/maps/dir/{user_latitud[0]},+{user_latitud[1]}/"
+                    for dea in deas_list:
+                        dea_latitud = utm.to_latlon(int(dea["direccion_coordenada_x"]), int(dea["direccion_coordenada_y"]), 30, "N")
+                        all_points+=f"{dea_latitud[0]},{dea_latitud[1]}/"
+                    print(all_points)
+                    sub_menu()
+                    user = input("Elija opción: ")
 
-    else:
-        print("Usuario o contraseña incorrectos")
-        menu()
-        user = input("Elija opción: ")
+            else:
+                print("Usuario o contraseña incorrectos")
+                menu()
+                user = input("Elija opción: ")
