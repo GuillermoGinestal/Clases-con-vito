@@ -30,6 +30,19 @@ def get_deas():
 data = get_deas()
 print('Total de Deas:',len(data))
 
+def cambiar_latitud(dataset):
+    result = {"data": []}
+    for i,dea in enumerate(dataset):
+        print(i)
+        try:
+            latitud = utm.to_latitud(int(dea["direccion_coordenada_x"]), int(dea["direccion_coordenada_y"]), 30, "N")
+        except:
+            continue
+        dea["direccion_coordenada_x"] = latitud[0]
+        dea["direccion_coordenada_y"] = latitud[1]
+        result["data"].append(dea)
+    with open("deas_latitud.json", "w", encoding="utf8") as file:
+        json.dump(result,file,ensure_ascii=False)
 
 def get_titulo(datos, titulo):
 
@@ -81,7 +94,8 @@ def menu():
     print(' -------------------------------')
     print("MENÚ DEA\n")
     print("1. Crear usuario")
-    print("2. Salir")
+    print("2. Acceder")
+    print("3. Salir")
 menu()
 
 user = input("\nElija una opción: ")
@@ -95,7 +109,7 @@ while user.lower() != "salir":
         new_user = {"name": name, "password" : password}
         
         def get_users():
-            with open("users.json") as file:
+            with open("users.json", "r") as file:
                 users = json.load(file)
                 return users
         users = get_users()
@@ -103,4 +117,59 @@ while user.lower() != "salir":
         with open ("users.json", "w") as file:
             json.dump(users, file)
         menu()
+        user = input(": ")
+
+    elif user == "2":
+        def sub_menu():
+            print("-----------------")
+            print("1. Buscar DEA por código")
+            print("2. Buscar DEA por distancia")
+            print("3. Buscar DEA por radio")
+            print("4. Volver al paso anterior")
+            print("-----------------")
         
+        def by_code(code):
+            aplicar_filtro = filter(lambda dea: dea["codigo_dea"] == code, data)
+            dea = next(aplicar_filtro, "No encontrado")
+            print(dea)
+            sub_menu()
+            user = input("Elija una opción: ")
+        
+        name = input("Nombre: ")
+        password = input("Contraseña: ")
+
+        with open("users.json") as file:
+            users = json.load(file)["data"]
+            validacion = map(lambda user: True if user['name'] == name and user['password'] == password else False, users)
+            if next (validacion):
+                sub_menu()
+                user = input("Elija opción: ")
+
+                # Opción que nos busca el DEA por código
+
+                if user == "1":
+                    code = input("Introduzca un código: ")
+                    by_code(code)
+                    sub_menu()
+                    user = input("Elija opción: ")
+        
+    elif user == "3":
+        user_x = input("Introduzca una coordenada X: ")
+        user_y = input("Introduzca una coordenada Y: ")
+        user_latitud = utm.to_latitud(user_x,user_y,30,"N")
+        
+        user = User(user_x, user_y)
+        deas_lista = user.get_nearest_by_radio(data, 100)
+        print(f"Se han encontrado {len(deas_lista)} D.E.A.s:")
+        all_points = f"https://www.google.com/maps/dir/{user_latitud[0]},+{user_latitud[1]}/"
+        for dea in deas_list:
+            dea_latlong = utm.to_latlon(int(dea["direccion_coordenada_x"]), int(dea["direccion_coordenada_y"]), 30, "N")
+            all_points+=f"{dea_latlong[0]},{dea_latlong[1]}/"
+        print(all_points)
+        sub_menu()
+        user = input("Elija opción: ")
+
+    else:
+        print("Usuario o contraseña incorrectos")
+        menu()
+        user = input("Elija opción: ")
